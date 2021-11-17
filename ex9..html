@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>지도 생성하기</title>
+
+</head>
+<body>
+<!-- 지도를 표시할 div 입니다 -->
+<div id="map" style="width:100vw;height:50vh;"></div>
+
+<div id="result"></div>
+
+<div>
+    <button onclick="loadData('http://172.25.240.1:5555/w17/1team.json')">1팀</button>
+    <button onclick="loadData('http://172.25.240.1:5555/w17/2team.json')">2팀</button>
+    <button onclick="loadData('http://172.25.240.1:5555/w17/3team.json')">3팀</button>
+</div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0657413c243ac86f1aac3e726ed35b9e"></script>
+<script>
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+        mapOption = {
+            center: new kakao.maps.LatLng(37.499411, 127.028983), // 지도의 중심좌표
+            level: 4 // 지도의 확대 레벨
+        };
+
+    // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+</script>
+
+<script>
+    kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+
+        // 클릭한 위도, 경도 정보를 가져옵니다
+        var latlng = mouseEvent.latLng;
+
+        var message = '클릭한 위치의 위도는 ' + latlng.getLat() + ' 이고, ';
+        message += '경도는 ' + latlng.getLng() + ' 입니다';
+
+        var resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = message;
+
+    });
+
+    const markerArr = []
+
+    function showMarkers(stores) {
+        // 기존 마커들을 지워야 한다. marker.setMap(null)
+        for (let i = 0; i < markerArr.length; i++) {
+            markerArr[i].setMap(null)
+        }
+
+        for (let i = 0; i < stores.length; i++) {
+            const store = stores[i]
+            const latLng = new kakao.maps.LatLng(store.lat, store.lng)
+            const marker = new kakao.maps.Marker({
+                map: map,
+                position: latLng,
+                title: store.name
+            })
+            markerArr.push(marker)
+        } // end for
+    }
+
+    const infowindowArr = []
+
+    function showOneMarker(store) {
+        // 기존 마커들을 지워야 한다. marker.setMap(null)
+        for (let i = 0; i < markerArr.length; i++) {
+            markerArr[i].setMap(null)
+        }
+
+        const latLng = new kakao.maps.LatLng(store.lat, store.lng)
+        const marker = new kakao.maps.Marker({
+            map: map,
+            position: latLng,
+            title: store.name
+        })
+
+
+        for (let i = 0; i < infowindowArr.length; i++) {
+            infowindowArr[i].close()
+        }
+
+        const iwContent = `<img src="${store.url}" width="100vw">`, // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+            iwPosition = new kakao.maps.LatLng(store.lat, store.lng), //인포윈도우 표시 위치입니다
+            iwRemoveable = true; // removeable 속성을 ture로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
+
+        const infowindow = new kakao.maps.InfoWindow({
+            map: map,
+            position: iwPosition,
+            content: iwContent,
+            removable : iwRemoveable
+        });
+
+        infowindow.open(map, marker);
+
+        infowindowArr.push(infowindow)
+
+        markerArr.push(marker)
+
+    }
+
+    document.querySelector(".storeList").addEventListener("click", (e) => {
+        // 안전하게 코딩하고 싶으면 2개 다 적기
+        e.preventDefault()
+        e.stopPropagation()
+
+        // 실제로 이벤트가 발생한 애
+        const target = e.target
+
+        if (target.tagName !== 'LI') {
+            return
+        }
+
+        console.log("LI 클릭")
+        const keyword = target.getAttribute("data-team")
+
+        if (keyword === 1) {
+            const result = arr.filter(s => s.team === keyword)
+            showMarkers(result)
+        } else if (keyword === 2) {
+            const result = arr.filter(s => s.team === keyword)
+            showMarkers(result)
+        } else {
+            const result = arr.filter(s => s.team === keyword)
+            showMarkers(result)
+        }
+
+    }, false)
+
+    // showMarkers(arr)
+
+</script>
+
+<ul class="storeList">
+
+</ul>
+
+<script>
+    function loadData(serverInfo) {
+        console.log("loadData: " + serverInfo)
+        fetch(serverInfo)
+            .then(response => response.json())  // 데이터 추출
+            .then(data => {
+                // console.log(data)
+                makeList(data)
+                showMarkers(data)
+            })
+    }
+
+    function makeList(arr) {
+
+        const ulEle = document.querySelector(".storeList")
+
+        let str = ''
+
+        for (let i = 0; i < arr.length; i++) {
+            console.log(arr[i])
+            // str += `<li data-name="${arr[i].name}" data-lat="${arr[i].lat}" data-lng="${arr[i].lng}" data-team="${arr[i].team}">${arr[i].name}<img src="${arr[i].url}" width="200vw"></li>`
+            str += `<li data-name="${arr[i].name}" data-lat="${arr[i].lat}" data-lng="${arr[i].lng}" data-team="${arr[i].team}">${arr[i].name}</li><img id="${arr[i].name}" src="${arr[i].url}" width="200vw">`
+        } // end for
+
+        ulEle.innerHTML = str
+    }
+
+    document.querySelector(".storeList").addEventListener("click", (e) => {
+        e.stopPropagation() // 안전하게 코딩하고 싶으면 2개 다 적기
+        e.preventDefault()
+
+        const target = e.target
+
+        if (target.tagName !== 'LI') {
+            return
+        }
+
+        console.log(target)
+
+        const name = target.getAttribute("data-name")
+        const lat = target.getAttribute("data-lat")
+        const lng = target.getAttribute("data-lng")
+        const url = document.querySelector(`#${name}`).src
+
+        console.log(name, lat, lng, url)
+
+        const store = {name, lat, lng, url}
+
+        showOneMarker(store)
+
+    }, false)
+
+</script>
+</body>
+</html>
