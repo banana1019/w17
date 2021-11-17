@@ -63,17 +63,21 @@
         } // end for
     }
 
-    // const arr = [
-    //     {name:'지로우라멘' , lat:37.5536583 , lng:126.9229494  , menu:'일식'},
-    //     {name:'오복수산' ,   lat:37.5376784 , lng:127.0018967  , menu:'일식'},
-    //     {name:'스시코테이' , lat:37.5276863 , lng:127.031121 , menu:'일식'},
-    //     {name:'호별관' ,    lat:37.5095451 , lng:127.03487724  , menu:'일식'},
-    //     {name:'타지팰리스' , lat:37.54450731 , lng:126.9915116  , menu:'카레'},
-    //     {name:'죠티인도' ,   lat:37.5550446 , lng:126.9379293  , menu:'카레'},
-    //     {name:'예티 인도' , lat:37.5655634 , lng:126.9233787 , menu:'카레'}
-    // ]
+    function showOneMarker((name, lat, lng)) {
+        // 기존 마커들을 지워야 한다. marker.setMap(null)
+        for (let i = 0; i < markerArr.length; i++) {
+            markerArr[i].setMap(null)
+        }
 
-    // console.log(JSON.stringify(arr))
+        const latLng = new kakao.maps.LatLng(lat, lng)
+        const marker = new kakao.maps.Marker({
+            map: map,
+            position: latLng,
+            title: name
+        })
+
+        markerArr.push(marker)
+    }
 
     document.querySelector(".storeList").addEventListener("click", (e) => {
         // 안전하게 코딩하고 싶으면 2개 다 적기
@@ -102,8 +106,6 @@
         }
 
     }, false)
-
-    // showMarkers(arr)
 
 </script>
 
@@ -154,6 +156,8 @@
         const lng = target.getAttribute("data-lng")
 
         console.log(name, lat, lng)
+
+        showOneMarker(name, lat, lng)
 
     }, false)
 
