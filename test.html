@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button  id="btn">CLICK</button>
+<script>
+
+    document.querySelector("#btn").addEventListener("click", function () {
+        console.log("click")
+
+        // fetch("http://localhost:5555/w17/store.json")
+        // fetch("http://localhost:5555/w17/1team.json")
+        fetch("http://localhost:5555/w17/test.json")
+        // fetch("http://192.168.0.186:5555/w17/1team.json")
+        // fetch("http://192.168.0.97:5555/w17/2team.json")
+        // fetch("http://192.168.0.230:5555/w17/3team.json")
+
+
+    }, false)
+
+    // const arr = [
+    //     {name:"세종문화회관",lat:37.57258565,lng:126.97547742,category:"공연장",team:1},
+    //     {name:"블루스퀘어",lat:37.5411186,lng:127.002446,category:"공연장",team:1},
+    //     {name:"한전아트센터",lat:37.4859395,lng:127.0282784,category:"공연장",team:1},
+    //     {name:"충무아트센터",lat:37.5664243,lng:127.0146529,category:"공연장",team:1},
+    //     {name:"샤롯데씨어터",lat:37.5111126,lng:127.0998268,category:"공연장",team:1}
+    // ]
+
+    // console.log(JSON.parse(arr))
+
+</script>
+
+</body>
+</html>
